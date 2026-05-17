@@ -11,29 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout the repository code
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # 2. Setup Node.js environment
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
-    # 3. Cache dependencies (AI Optimization for performance)
-    - name: Cache Node Modules
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+    # Humnay pichli baar cache lagaya tha, ho sakta hai cache mein purani corrupted dependency phansi ho.
+    # Is baar hum baghair cache k direct fresh npm install krwa rahay hain.
+    - name: Clean Install Dependencies
+      run: npm ci
 
-    # 4. Install Dependencies
-    - name: Install Dependencies
-      run: npm install
-
-    # 5. Run Automated Unit Tests
-    - name: Run Unit Tests
-      run: npm test
+    - name: Run Unit Tests with Global Jest
+      run: npx jest --forceExit
